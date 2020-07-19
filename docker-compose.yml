@@ -1,0 +1,68 @@
+version: '3.5'
+
+services:
+  redis:
+    container_name: redis
+    image: redis
+
+  ui:
+    container_name: ui
+    image: tlsinventory/frontend
+    env_file:
+      - config/frontend/.env
+
+  flask:
+    container_name: flask
+    image: tlsinventory/backend
+    depends_on:
+      - redis
+    volumes:
+      - db:/app/bakalarka3/db
+      - flask-logs:/app/bakalarka3/log
+    env_file:
+      - config/backend/.env
+
+  sslyze_scanner:
+    container_name: sslyze_scanner
+    image: tlsinventory/backend
+    depends_on:
+      - redis
+      - flask
+    env_file:
+      - config/sslyze_rq/.env
+    volumes:
+      - ./sslyze_rq/supervisor:/app/supervisor
+    entrypoint: ["/bin/bash", "-c", "supervisord -c /app/supervisor/supervisord.conf -n"]
+    
+  # The following is in preparation when there will be two queues.
+  # sslyze_scanner_recurring:
+  #   container_name: sslyze_scanner_recurring
+  #   image: tlsinventory/bakalarka-backend
+  #   depends_on:
+  #     - redis
+  #     - flask
+  #   env_file:
+  #     - sslyze_rq/.env
+
+  nginx:
+    container_name: nginx
+    build: config/nginx
+    depends_on:
+      - ui
+      - flask
+    ports:
+      - "443:443"
+    # network_mode: "host" # this was workaround for https://github.com/gliderlabs/docker-alpine/issues/307
+    # this however then breaks connection to flask:5000
+
+volumes:
+  db:
+  flask-logs:
+
+# The following was test to fix the problem, when nginx didn't have access to internet for apk update in build.    
+# It was reproducible on VM Ubuntu 18.04.
+# networks:                                
+#   default:                               
+#     driver: bridge
+#     driver_opts:                         
+#       com.docker.network.driver.mtu: 1400
