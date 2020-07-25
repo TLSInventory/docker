@@ -133,3 +133,4 @@ dmypy.json
 .venv
 .idea
 *.pcap
+config/nginx/nginx.conf
