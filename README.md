@@ -6,7 +6,6 @@ You can deploy your own instance of TLSInventory using the following steps or us
 
 Install using
 ```bash
-# git clone https://github.com/BorysekOndrej/bakalarka-general.git
 git clone https://github.com/TLSInventory/Docker.git
 cd Docker/config
 cp backend/dist.env backend/.env
