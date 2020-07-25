@@ -21,6 +21,11 @@ services:
       - flask-logs:/app/bakalarka3/log
     env_file:
       - config/backend/.env
+    deploy:
+      resources:
+        limits:
+          cpus: '0.8'
+          memory: 700M
 
   sslyze_scanner:
     container_name: sslyze_scanner
@@ -33,6 +38,11 @@ services:
     volumes:
       - ./sslyze_rq/supervisor:/app/supervisor
     entrypoint: ["/bin/bash", "-c", "supervisord -c /app/supervisor/supervisord.conf -n"]
+    deploy:
+      resources:
+        limits:
+          cpus: '0.8'
+          memory: 700M
     
   # The following is in preparation when there will be two queues.
   # sslyze_scanner_recurring:
