@@ -36,12 +36,21 @@ cp nginx/nginx.conf.dist nginx/nginx.conf
 
 
 # Then run:
-# docker-compose up --build -d
+# Run only production containers
+# docker-compose --compatibility -f docker-compose.yml up --build -d --remove-orphans
+
+# Run also dev containers
+# docker-compose --compatibility -f docker-compose.yml -f docker-compose.dev-tooling.yml up --build -d --remove-orphans
 ```
 
 Update using:
 ```bash
 docker-compose pull
-docker-compose up --build -d # --remove-orphans
+# Run only production containers
+# docker-compose --compatibility -f docker-compose.yml up --build -d --remove-orphans
+
+# Run also dev containers
+# docker-compose --compatibility -f docker-compose.yml -f docker-compose.dev-tooling.yml up --build -d --remove-orphans
+
 # docker image prune  # Optional: This removes all dangling images. Not just the ones from this project.
 ```
