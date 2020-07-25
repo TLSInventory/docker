@@ -12,6 +12,8 @@ cd Docker/config
 cp backend/dist.env backend/.env
 cp frontend/dist.env frontend/.env
 cp sslyze_rq/dist.env sslyze_rq/.env
+cp nginx/nginx.conf.dist nginx/nginx.conf
+
 
 # Manual steps:
 # Replace all config values, which are uncommented and contain value FILL_MANUALY
