@@ -36,7 +36,7 @@ services:
     env_file:
       - config/sslyze_rq/.env
     volumes:
-      - ./sslyze_rq/supervisor:/app/supervisor
+      - ./config/sslyze_rq/supervisor:/app/supervisor
     entrypoint: ["/bin/bash", "-c", "supervisord -c /app/supervisor/supervisord.conf -n"]
     deploy:
       resources:
