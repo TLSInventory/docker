@@ -4,13 +4,19 @@ services:
   redis:
     container_name: redis
     image: redis
+    deploy:
+      restart_policy:
+        condition: on-failure
 
   ui:
     container_name: ui
     image: tlsinventory/frontend
     env_file:
       - config/frontend/.env
-
+    deploy:
+      restart_policy:
+        condition: on-failure
+  
   flask:
     container_name: flask
     image: tlsinventory/backend
@@ -22,6 +28,8 @@ services:
     env_file:
       - config/backend/.env
     deploy:
+      restart_policy:
+        condition: on-failure
       resources:
         limits:
           cpus: '0.8'
@@ -39,6 +47,8 @@ services:
       - ./config/sslyze_rq/supervisor:/app/supervisor
     entrypoint: ["/bin/bash", "-c", "supervisord -c /app/supervisor/supervisord.conf -n"]
     deploy:
+      restart_policy:
+        condition: on-failure
       resources:
         limits:
           cpus: '0.8'
@@ -62,6 +72,9 @@ services:
       - flask
     ports:
       - "443:443"
+    deploy:
+      restart_policy:
+        condition: on-failure
     # network_mode: "host" # this was workaround for https://github.com/gliderlabs/docker-alpine/issues/307
     # this however then breaks connection to flask:5000
 
