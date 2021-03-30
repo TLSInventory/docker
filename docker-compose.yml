@@ -23,8 +23,8 @@ services:
     depends_on:
       - redis
     volumes:
-      - db:/app/bakalarka3/db
-      - flask-logs:/app/bakalarka3/log
+      - db:/app/tlsinventory-backend/db
+      - flask-logs:/app/tlsinventory-backend/log
     env_file:
       - config/backend/.env
     deploy:
