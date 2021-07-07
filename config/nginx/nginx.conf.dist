@@ -7,16 +7,19 @@ upstream ui_server {
     server ui:80;
 }
 
+upstream static_landing_page_server {
+    server landing:80;
+}
+
 server {
+
+    # Warning: The HTTP server is not filtered.
+    #          Cloudflare filtering is performed on the HTTPS server, so hide the HTTP server by firewall from outside world, but leave it accessible from other containers.
+    #          Beware that Docker networking can ignore UFW and similar software firewalls.
 
     listen 80;
 
-    include /etc/nginx/cloudflare_real_ips.conf;
-    
     location / {
-        # if ($request_uri ~* "/ui/(.*)") { 
-        #     proxy_pass  http://ui_server/$1;
-        # }   
         proxy_set_header Host $host;
         proxy_pass http://ui_server;
         proxy_redirect off;
@@ -28,26 +31,12 @@ server {
         proxy_redirect off;
     }
 
-    location /debug {
-        proxy_set_header Host $host;
-        proxy_pass http://flask_server;
-        proxy_redirect off;
-    }
-
 }
-
-map $http_cf_ipcountry $allow {
-        default no;
-        CZ yes;
-        SK yes;
-}
-
 
 server {
     listen              443 ssl;
-    # server_name         bakalarka1.borysek.eu;
-    # server_name            tlsinventory.example.com
-    server_name            FILL_MANUALLY
+    server_name         app.tlsinventory.com;
+    # server_name            FILL_MANUALLY;
 
     ssl_certificate     /etc/ssl/private/cert.pem;
     ssl_certificate_key /etc/ssl/private/key.pem;
@@ -55,18 +44,53 @@ server {
 
     include /etc/nginx/cloudflare_real_ips.conf;
 
+    if ($remote_addr != $http_cf_connecting_ip) {
+        return 403;
+    }
+
     location / {
         proxy_pass http://127.0.0.1;
 
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header Host $host;
-     
+
         proxy_redirect off;
     }
 
-    # if ($allow = no) {
-    #     return 403;
-    # }
-
 }
 
+server {
+    listen              443 ssl;
+    server_name         tlsinventory.com;
+    # server_name            FILL_MANUALLY;
+
+    ssl_certificate     /etc/ssl/private/cert.pem;
+    ssl_certificate_key /etc/ssl/private/key.pem;
+    ssl_password_file /etc/ssl/private/keys.pass;
+
+    include /etc/nginx/cloudflare_real_ips.conf;
+
+    if ($remote_addr != $http_cf_connecting_ip) {
+        return 403;
+    }
+
+    location /api {
+        proxy_pass http://127.0.0.1;
+
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header Host $host;
+
+        proxy_redirect off;
+    }
+
+    location / {
+        proxy_pass http://static_landing_page_server;
+        # proxy_pass http://127.0.0.1;
+
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header Host $host;
+
+        proxy_redirect off;
+    }
+
+}
