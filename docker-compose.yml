@@ -70,6 +70,7 @@ services:
     depends_on:
       - ui
       - flask
+      - landing
     ports:
       - "443:443"
     deploy:
@@ -77,6 +78,11 @@ services:
         condition: on-failure
     # network_mode: "host" # this was workaround for https://github.com/gliderlabs/docker-alpine/issues/307
     # this however then breaks connection to flask:5000
+
+  landing:
+    container_name: landing
+    image: tlsinventory/landing-page
+  
 
 volumes:
   db:
