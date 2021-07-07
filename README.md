@@ -44,7 +44,7 @@ cp nginx/nginx.conf.dist nginx/nginx.conf
 
 Update using:
 ```bash
-docker-compose pull
+docker-compose pull && docker-compose up --build -d
 # Run only production containers
 # docker-compose --compatibility -f docker-compose.yml up --build -d --remove-orphans
 
