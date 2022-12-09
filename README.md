@@ -42,6 +42,14 @@ cp nginx/nginx.conf.dist nginx/nginx.conf
 # docker-compose --compatibility -f docker-compose.yml -f docker-compose.dev-tooling.yml up --build -d --remove-orphans
 ```
 
+During first run you may need to manually create the database:
+
+```sh
+docker run -it -v tlsinventory_db:/app/tlsinventory-backend/db --entrypoint bash tlsinventory/backend
+$ export FLASK_APP=start.py && flask db upgrade
+```
+
+
 Update using:
 ```bash
 docker-compose pull && docker-compose up --build -d
