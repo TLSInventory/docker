@@ -6,7 +6,7 @@ services:
     image: redis
     deploy:
       restart_policy:
-        condition: on-failure
+        condition: unless-stopped
 
   ui:
     container_name: ui
@@ -15,7 +15,7 @@ services:
       - config/frontend/.env
     deploy:
       restart_policy:
-        condition: on-failure
+        condition: unless-stopped
   
   flask:
     container_name: flask
@@ -29,7 +29,7 @@ services:
       - config/backend/.env
     deploy:
       restart_policy:
-        condition: on-failure
+        condition: unless-stopped
       resources:
         limits:
           cpus: '0.8'
@@ -48,7 +48,7 @@ services:
     entrypoint: ["/bin/bash", "-c", "supervisord -c /app/supervisor/supervisord.conf -n"]
     deploy:
       restart_policy:
-        condition: on-failure
+        condition: unless-stopped
       resources:
         limits:
           cpus: '0.8'
@@ -75,14 +75,15 @@ services:
       - "443:443"
     deploy:
       restart_policy:
-        condition: on-failure
+        condition: unless-stopped
     # network_mode: "host" # this was workaround for https://github.com/gliderlabs/docker-alpine/issues/307
     # this however then breaks connection to flask:5000
 
   landing:
     container_name: landing
     image: tlsinventory/landing-page
-  
+    restart: unless-stopped
+
 
 volumes:
   db:
